@@ -1,40 +1,13 @@
 #include "GLFW/glfw3.h"
 #include <iostream>
 
+#include "application.h"
 #include "player.h"
 #include "map.h"
 
 using namespace std;
 
 GLFWwindow *window;
-
-Player *player;
-Map *map;
-
-void NewGame()
-{
-	map = new Map(75);
-	player = new Player(100, 75);
-	GameOver = false;
-}
-
-void Keyboard(GLFWwindow *window, int key, int scode, int action, int smode)
-{
-	if(key == GLFW_KEY_SPACE && action == GLFW_PRESS)
-	{
-		if(player->onGround() && !GameOver)
-		{
-			player->Jump();
-		}
-		else if(GameOver)
-		{
-			delete player;
-			delete map;
-
-			NewGame();
-		}
-	}
-}
 
 void Time()
 {
@@ -50,44 +23,26 @@ void Time()
 	}
 }
 
-int main()
+
+class Game : public Application
 {
-	srand(time(NULL));
-
-	if(!glfwInit())
+	Player *player;
+	Map *map;
+public:
+	Game() : Application(640, 480, "MarioRun")
 	{
-		cout << "Error library";
-		return -1;
+		newGame();
+
+		InitTexture();
 	}
-
-	window = glfwCreateWindow(screenWidth, screenHeight, "MarioRun", nullptr, nullptr);
-
-	if(!window)
+	~Game()
 	{
-		cout << "Error create window";
-		glfwTerminate();
-		return -1;
+		delete player;
+		delete map;
 	}
-
-	glfwMakeContextCurrent(window);
-	glClearColor(0, 0, 0, 0);
-
-	glOrtho(0, screenWidth, 0, screenHeight, 0, 1);
-
-	glfwSetKeyCallback(window,Keyboard);
-	glfwSetWindowSizeCallback(window, [](GLFWwindow *window, int width, int height)
-							  {
-								  glViewport(0, 0, width, height);
-							  });
-
-	InitTexture();
-
-	NewGame();
-
-	while(!glfwWindowShouldClose(window))
+private:
+	void render() override
 	{
-		glClear(GL_COLOR_BUFFER_BIT);
-
 		Time();
 
 		map->Draw();
@@ -101,15 +56,48 @@ int main()
 
 		glfwPollEvents();
 
-		glfwSwapBuffers(window);
-
 		td.ClockUnit = false;
 		td.speed = td.delta * 100;
 	}
+	void keyboard(int &key, int &scode, int &action, int &smode) override
+	{
+		if(key == Key::Space && action == KeyState::Press)
+		{
+			if(key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+			{
+				if(player->onGround() && !GameOver)
+				{
+					player->Jump();
+				}
+				else if(GameOver)
+				{
+					delete player;
+					delete map;
 
-	delete player;
-	delete map;
+					newGame();
+				}
+			}
+		}
+		if(key == Key::Escape && action == KeyState::Press)
+		{
+			this->exit();
+		}
+	}
+	void newGame()
+	{
+		map = new Map(75);
+		player = new Player(100, 75);
+		GameOver = false;
+	}
+};
 
-	glfwTerminate();
+
+int main()
+{
+	srand(time(NULL));
+
+	Game MarioRun;
+	MarioRun.Run();
+
 	return 0;
 }

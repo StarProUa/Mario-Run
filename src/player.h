@@ -5,9 +5,7 @@
 
 class Player
 {
-	friend void Keyboard(GLFWwindow *window, int key, int scode, int action, int smode);
-
-	int jumpHeight = 55;
+	int jumpHeight = 20;
 
 	int sprite;
 
@@ -20,14 +18,12 @@ protected:
 	float y, dy;
 	int ground;
 
-	void Jump() { dy += jumpHeight; }
-
-	bool onGround();
-
 public:
+	bool onGround();
+	void Jump();
 	int GetGround();
 	Coord GetArg();
-	Player(int &&x, int &&y);
+	Player(const int &x, const int &y);
 	void Draw();
 };
 

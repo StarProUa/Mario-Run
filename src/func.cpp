@@ -49,18 +49,17 @@ void InitTexture()
 		unsigned char *data;
 	} arg[amount];
 
-
-	arg[0].data = stbi_load("small-mario.png", &arg[0].w_image, &arg[0].h_image, &arg[0].cnt, 0);
-	arg[1].data = stbi_load("background_void_ground.jpg", &arg[1].w_image, &arg[1].h_image, &arg[1].cnt, 0);
-	arg[2].data = stbi_load("flower_atlass.png", &arg[2].w_image, &arg[2].h_image, &arg[2].cnt, 0);
-	arg[3].data = stbi_load("one_clound.png", &arg[3].w_image, &arg[3].h_image, &arg[3].cnt, 0);
-	arg[4].data = stbi_load("two_clound.png", &arg[4].w_image, &arg[4].h_image, &arg[4].cnt, 0);
+	arg[0].data = stbi_load("../assets/small_mario.png", &arg[0].w_image, &arg[0].h_image, &arg[0].cnt, 0);
+	arg[1].data = stbi_load("../assets/background_ground.jpg", &arg[1].w_image, &arg[1].h_image, &arg[1].cnt, 0);
+	arg[2].data = stbi_load("../assets/flower_atlass.png", &arg[2].w_image, &arg[2].h_image, &arg[2].cnt, 0);
+	arg[3].data = stbi_load("../assets/one_clound.png", &arg[3].w_image, &arg[3].h_image, &arg[3].cnt, 0);
+	arg[4].data = stbi_load("../assets/two_clound.png", &arg[4].w_image, &arg[4].h_image, &arg[4].cnt, 0);
 
 	for(unsigned i = 0; i < amount; i++)
 	{
 		if(arg[i].data == NULL)
 		{
-			cout << "Failed load image!" << endl;
+			cout << "Failed load image!" << i << endl;
 			glfwTerminate();
 			exit(-1);
 		}

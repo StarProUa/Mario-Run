@@ -5,8 +5,6 @@
 
 class Map
 {
-	friend void Keyboard(GLFWwindow *window, int key, int scode, int action, int smode);
-
 	int ground;
 	float mapScroll;
 

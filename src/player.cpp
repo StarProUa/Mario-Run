@@ -42,7 +42,7 @@ void Player::Jump_Logic()
 	{
 		y += dy * td.speed / 10;
 
-		dy -= (y < ground + jumpHeight) ? 0.1 : 0.2;
+		dy -= (y < ground + jumpHeight) ? 0.2 : 0.3;
 
 		if(y <= ground)
 		{
@@ -64,7 +64,7 @@ void Player::Sprite_Logic()
 		}
 		else if(!onGround())
 		{
-			sprite = jump;
+			sprite = spriteIndex::jump;
 		}
 	}
 	else
@@ -76,19 +76,25 @@ void Player::Sprite_Logic()
 
 bool Player::onGround() { return y == ground || y <= ground + 10; }
 
+void Player::Jump()
+{
+	dy += jumpHeight;
+}
+
 Coord Player::GetArg()
 {
 	Coord coord {static_cast<float>(x), y};
 	return coord;
 }
 
-Player::Player(int &&x, int &&y)
+Player::Player(const int &x, const int &y)
 {
 	sprite = run0;
 	this->x = x;
 	this->y = this->ground = y;
 	dy = 0;
 }
+
 
 void Player::Draw()
 {
