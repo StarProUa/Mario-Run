@@ -17,11 +17,10 @@ enum KeyState
 class Application
 {
 	GLFWwindow *window;
-	int screenWidth, screenHeight;
 
 	const double fpsLimit = 1.0 / 60.0;
-	double lastUpdateTime = 0;
-	double lastFrameTime = 0;
+	double lastUpdateTime = 0, lastFrameTime = 0;
+	double sleepTime;
 
 protected:
 	Application(int width, int height, const char *title);
@@ -36,8 +35,8 @@ protected:
 public:
 	void Run();
 
-
 private:
+	void initTexture();
 	void initLog();
 	static void keyboardCallback(GLFWwindow *window, int key, int scode, int action, int smode);
 };

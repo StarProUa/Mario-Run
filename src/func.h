@@ -1,11 +1,16 @@
 #ifndef FUNCTION_H
 #define FUNCTION_H
 
+#include <iostream>
+
 #define screenWidth 640
 #define screenHeight 480
 
-#include "GLFW/glfw3.h"
-#include <iostream>
+#define WAIT 0.1
+
+#define ground 75
+
+#define speed 200
 
 struct Coord
 {
@@ -14,13 +19,18 @@ struct Coord
 
 struct Color
 {
-	GLuint r, g, b;
+	unsigned int r, g, b;
 };
 
-inline Color yellow {1, 1, 0};
-inline Color white {1, 1, 1};
+inline bool gameOver;
+inline bool clockUnit;
+inline double delta = 0;
 
-inline bool GameOver;
+inline float standart_texture[8] = {
+	0.f, 0.f,
+	0.f, 1.f,
+	1.f, 0.f,
+	1.f, 1.f };
 
 enum spriteIndex
 {
@@ -31,20 +41,8 @@ enum spriteIndex
 	fall = 16,
 };
 
-struct TimeData
-{
-	float new_time, old_time, delta;
-	float sleep = 0.1;
-	bool ClockUnit = false;
-	float speed;
-};
+void Paint(Color color, unsigned int &&Mode, int &&array_first, int &&array_size, int *array);
 
-inline TimeData td;
-
-void Paint(Color &color, GLenum &&Mode, int &&array_first, int &&array_size, int *array);
-
-void PaintTexture(Color &color, GLenum &&Mode, int array_first, int array_size, int *array, float *texture_array, unsigned id);
-
-void InitTexture();
+void PaintTexture(Color color, unsigned int &&Mode, int array_first, int array_size, int *array, float *texture_array, unsigned id);
 
 #endif // FUNCTION_H

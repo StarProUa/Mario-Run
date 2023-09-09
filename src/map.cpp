@@ -1,159 +1,84 @@
 #include "map.h"
+#include "func.h"
+#include "entity.h"
 
-int prop1_box[16]  = {0,50, 0,0, 50,50, 50,0,
-	0,50, 0,0, 50,50, 50,0,};
-float prop1_texture[16] =
-	{
-		// Run 0
-		224.f / 288.f, 0.f,
-		224.f / 288.f, 1.f,
-		240.f / 288.f, 0.f,
-		240.f / 288.f, 1.f,
-		// Run 1
-		240.f / 288.f, 0.f,
-		240.f / 288.f, 1.f,
-		256.f / 288.f, 0.f,
-		256.f / 288.f, 1.f,
-};
+#include <vector>
 
-int prop2_box[16] = {0,100, 0,0, 50,100, 50,0,
-					 0,100, 0,0, 50,100, 50,0};
-float prop2_texture[16] =
-	{
-		// Run 0
-		0.f, 0.f,
-		0.f, 1.f,
-		411.f / 822.f, 0.f,
-		411.f / 822.f, 1.f,
-		// Run 1
-		411.f / 822.f, 0.f,
-		411.f / 822.f, 1.f,
-		1.f, 0.f,
-		1.f, 1.f,
-};
+#include "GLFW/glfw3.h"
+#include "plog/Log.h"
 
 int bacground_box[8]  = {0,screenHeight, 0,0, screenWidth,screenHeight, screenWidth,0};
-float standart_texture[8] =
-	{
-		0.f, 0.f,
-		0.f, 1.f,
-		1.f, 0.f,
-		1.f, 1.f
-};
 
-int cloud_box1[8] = {0, 100, 0,0, 200,100, 200,0};
-int cloud_box2[8] = {0, 100, 0,0, 300,100, 300,0};
+std::vector<Entity *> entities;
 
-void Map::Sprite_Logic()
+bool collision(const Entity *a, const Entity *b)
 {
-	if(td.ClockUnit)
-	{
-		prop->sprite += 4;
-		if(prop->sprite  >= 8) prop->sprite  = run0;
-		td.sleep = 0.1;
-	}
+	const Player *player = static_cast<const Player *>(a);
+	const Prop *prop = static_cast<const Prop *>(b);
+	return ((player->x <= prop->x + 50) && (player->x + 50 >= b->x)) && player->y <= prop->y + prop->height;
 }
 
-void Map::CheckProp()
+Map::Map()
 {
-	if(prop == nullptr)
-	{
-		prop = new Prop(ground);
-	}
-	if(cloud == nullptr)
-	{
-		cloud = new Cloud();
-	}
-}
+	PLOG_DEBUG << "MAP CREATED";
 
-Map::Map(int ground)
-{
-	this->ground = ground;
 	mapScroll = 0;
+	gameOver = false;
+
+	entities.push_back(new Player(100, ground)); // Reservation of the first slot for the player for further collision processing
+	entities.push_back(new Prop());
+	entities.push_back(new Cloud());
 }
 
-bool Map::Collision(Coord coord)
+bool Map::playerActive()
 {
-	CheckProp();
-	return ((prop->x <= coord.x + 50) && (prop->x + 50 >= coord.x)) && coord.y <= prop->y + prop->height;
+	return !gameOver;
 }
 
-void Map::Draw()
+void Map::playerJump()
 {
-	CheckProp();
+	Player *player = static_cast<Player *>(entities[0]);
+	player->jump();
+}
 
-	if(!GameOver)
-	{
-		prop->x -= 5 * td.speed;
-		mapScroll -= 5 * td.speed;
-		cloud->x -= 2 * td.speed;
-	}
-
-	// Scroll map //
+void Map::draw()
+{
+	if(!gameOver) mapScroll -= delta * speed;
 
 	glPushMatrix();
 	glTranslatef(mapScroll, 0, 0);
-	PaintTexture(white, GL_TRIANGLE_STRIP, 0, 4, bacground_box, standart_texture, 1);
+	PaintTexture({1, 1, 1}, GL_TRIANGLE_STRIP, 0, 4, bacground_box, standart_texture, 1);
 	glPopMatrix();
 
 	glPushMatrix();
 	glTranslatef(screenWidth + mapScroll, 0, 0);
-	PaintTexture(white, GL_TRIANGLE_STRIP, 0, 4, bacground_box, standart_texture, 1);
+	PaintTexture({1, 1, 1}, GL_TRIANGLE_STRIP, 0, 4, bacground_box, standart_texture, 1);
 	glPopMatrix();
 
-	// Draw Cloud //
+	if(mapScroll <= -screenWidth) mapScroll = 0;
 
-	glPushMatrix();
-	glTranslatef(cloud->x, cloud->y, 0);
-	if(cloud->type)
+	for(int i = 0; i < entities.size(); i++)
 	{
-		PaintTexture(white, GL_TRIANGLE_STRIP, run0, 4, cloud_box2, standart_texture, 3);
-	}
-	else
-	{
-		PaintTexture(white, GL_TRIANGLE_STRIP, run0, 4, cloud_box1, standart_texture, 4);
-	}
-	glPopMatrix();
-
-	// Draw Prop(Enemy) //
-
-	glPushMatrix();
-	glTranslatef(prop->x, prop->y, 0);
-
-	Sprite_Logic();
-
-	if(prop->height == 50)
-	{
-		PaintTexture(white, GL_TRIANGLE_STRIP, prop->sprite, 4, prop1_box, prop1_texture, 0);
-	}
-	else
-	{
-		PaintTexture(white, GL_TRIANGLE_STRIP, prop->sprite, 4, prop2_box, prop2_texture, 2);
-	}
-	glPopMatrix();
-
-	// Check //
-
-	if(mapScroll <= -screenWidth)
-	{
-		mapScroll = 0;
+		entities[i]->draw();
 	}
 
-	if(cloud->x < -300)
+	if(collision(entities[0], entities[1]))
 	{
-		delete cloud;
-		cloud = nullptr;
+		gameOver = true;
+		PLOG_DEBUG << "COLLISION DETECTED";
 	}
 
-	if(prop->x < -100)
-	{
-		delete prop;
-		prop = nullptr;
-	}
 }
 
 Map::~Map()
 {
-	delete prop;
-	delete cloud;
+	for(int i = 0; i < entities.size(); i++)
+	{
+		delete entities[i];
+	}
+
+	entities.clear();
+
+	PLOG_DEBUG << "ENTITIES REMOVED";
+	PLOG_DEBUG << "MAP DELETED";
 }

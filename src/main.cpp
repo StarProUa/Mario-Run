@@ -2,62 +2,26 @@
 #include <iostream>
 
 #include "application.h"
-#include "player.h"
 #include "map.h"
 
 using namespace std;
 
-GLFWwindow *window;
-
-void Time()
-{
-	td.new_time = glfwGetTime();
-	td.delta = td.new_time - td.old_time;
-	td.old_time = td.new_time;
-	td.sleep -= td.delta;
-
-	if(td.sleep <= 0)
-	{
-		td.sleep = 0.1;
-		td.ClockUnit = true;
-	}
-}
-
-
 class Game : public Application
 {
-	Player *player;
 	Map *map;
 public:
 	Game() : Application(640, 480, "MarioRun")
 	{
-		newGame();
-
-		InitTexture();
+		map = new Map();
 	}
 	~Game()
 	{
-		delete player;
 		delete map;
 	}
 private:
 	void render() override
 	{
-		Time();
-
-		map->Draw();
-
-		if(map->Collision(player->GetArg()))
-		{
-			GameOver = true;
-		}
-
-		player->Draw();
-
-		glfwPollEvents();
-
-		td.ClockUnit = false;
-		td.speed = td.delta * 100;
+		map->draw();
 	}
 	void keyboard(int &key, int &scode, int &action, int &smode) override
 	{
@@ -65,16 +29,14 @@ private:
 		{
 			if(key == GLFW_KEY_SPACE && action == GLFW_PRESS)
 			{
-				if(player->onGround() && !GameOver)
+				if(map->playerActive())
 				{
-					player->Jump();
+					map->playerJump();
 				}
-				else if(GameOver)
+				else
 				{
-					delete player;
 					delete map;
-
-					newGame();
+					map = new Map();
 				}
 			}
 		}
@@ -82,12 +44,6 @@ private:
 		{
 			this->exit();
 		}
-	}
-	void newGame()
-	{
-		map = new Map(75);
-		player = new Player(100, 75);
-		GameOver = false;
 	}
 };
 

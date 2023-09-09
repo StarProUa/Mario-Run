@@ -16,12 +16,10 @@ include_directories(external/stb)
 
 set(SRC
     src/main.cpp
-    src/player.cpp
+    src/entity.cpp
     src/map.cpp
-    src/func.cpp
     src/application.cpp
     # headers
-    src/player.h
     src/map.h
     src/func.h
     src/application.h
