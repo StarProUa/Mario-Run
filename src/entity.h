@@ -29,7 +29,6 @@ public:
 	~Player() override{};
 private:
 	void spriteLogic() override;
-	//void spawn();
 	void jumpLogic();
 	bool onGround();
 };

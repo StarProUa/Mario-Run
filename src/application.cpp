@@ -9,7 +9,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-unsigned texture[5];
+unsigned texture[6];
 
 void Paint(Color color, unsigned int &&Mode, int &&array_first, int &&array_size, int *array)
 {
@@ -63,9 +63,11 @@ Application::Application(int width, int height, const char *title)
 								  glViewport(0, 0, width, height);
 							  });
 
-	glfwSetWindowUserPointer(window, this);
-
 	glfwSetKeyCallback(window, keyboardCallback);
+
+	glfwSetMouseButtonCallback(window, mouseCallback);
+
+	glfwSetWindowUserPointer(window, this);
 
 	initTexture();
 
@@ -115,7 +117,7 @@ void Application::Run()
 
 void Application::initTexture()
 {
-	unsigned amount = 5;
+	unsigned amount = 6;
 
 	struct Texture
 	{
@@ -128,6 +130,7 @@ void Application::initTexture()
 	arg[2].data = stbi_load("../assets/flower_atlass.png", &arg[2].w_image, &arg[2].h_image, &arg[2].cnt, 0);
 	arg[3].data = stbi_load("../assets/one_clound.png", &arg[3].w_image, &arg[3].h_image, &arg[3].cnt, 0);
 	arg[4].data = stbi_load("../assets/two_clound.png", &arg[4].w_image, &arg[4].h_image, &arg[4].cnt, 0);
+	arg[5].data = stbi_load("../assets/menu.png", &arg[5].w_image, &arg[5].h_image, &arg[5].cnt, 0);
 
 	for(unsigned i = 0; i < amount; i++)
 	{
@@ -202,5 +205,15 @@ Application::~Application()
 void Application::keyboardCallback(GLFWwindow *window, int key, int scode, int action, int smode)
 {
 	Application *app = static_cast<Application *>(glfwGetWindowUserPointer(window));
-	app->keyboard(key, scode, action, smode);
+	app->keyboard(key, action);
+}
+
+void Application::mouseCallback(GLFWwindow *window, int button, int action, int smode)
+{
+	double x, y;
+
+	glfwGetCursorPos(window, &x, &y);
+
+	Application *app = static_cast<Application *>(glfwGetWindowUserPointer(window));
+	app->mouse(button, action, x, screenHeight - y);
 }

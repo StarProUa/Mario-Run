@@ -23,30 +23,49 @@ private:
 	{
 		map->draw();
 	}
-	void keyboard(int &key, int &scode, int &action, int &smode) override
+	void keyboard(int &key, int &action) override
 	{
-		if(key == Key::Space && action == KeyState::Press)
+		if(key == Key::Space && action == State::Press)
 		{
-			if(key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+			if(map->playerActive() && !map->Pause())
 			{
-				if(map->playerActive())
+				map->playerJump();
+			}			
+		}
+		if(key == Key::Escape && action == State::Press)
+		{
+			if(!map->Pause()) map->Pause() = true;
+			else map->Pause() = false;
+		}
+	}
+	void mouse(int &button, int &action, int x, int y) override
+	{
+		if(button == mouseButton::Left && action == State::Press)
+		{
+			if(map->Pause())
+			{
+				if((x >= 218 && x <= 218 + 203) && (y >= 228 && y <= 228 + 65)) // start
 				{
-					map->playerJump();
+					map->Pause() = false;
+
+					if(!map->playerActive())
+					{
+						delete map;
+						map = new Map();
+					}
 				}
-				else
+				else if((x >= 187 && x <= 187 + 264) && (y >= 138 && y <= 138 + 65)) // options
 				{
-					delete map;
-					map = new Map();
+					// not released
+				}
+				else if((x >= 248 && x <= 248 + 142) && (y >= 48 && y <= 48 + 65)) // start
+				{
+					this->exit();
 				}
 			}
 		}
-		if(key == Key::Escape && action == KeyState::Press)
-		{
-			this->exit();
-		}
 	}
 };
-
 
 int main()
 {

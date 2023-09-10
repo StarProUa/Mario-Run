@@ -7,6 +7,8 @@
 #include "GLFW/glfw3.h"
 #include "plog/Log.h"
 
+float mapScroll;
+
 int bacground_box[8]  = {0,screenHeight, 0,0, screenWidth,screenHeight, screenWidth,0};
 
 std::vector<Entity *> entities;
@@ -23,7 +25,7 @@ Map::Map()
 	PLOG_DEBUG << "MAP CREATED";
 
 	mapScroll = 0;
-	gameOver = false;
+	loser = false;
 
 	entities.push_back(new Player(100, ground)); // Reservation of the first slot for the player for further collision processing
 	entities.push_back(new Prop());
@@ -32,7 +34,12 @@ Map::Map()
 
 bool Map::playerActive()
 {
-	return !gameOver;
+	return !loser;
+}
+
+bool &Map::Pause()
+{
+	return pause;
 }
 
 void Map::playerJump()
@@ -41,9 +48,15 @@ void Map::playerJump()
 	player->jump();
 }
 
+void Map::click(const int &x, const int &y)
+{
+
+
+}
+
 void Map::draw()
 {
-	if(!gameOver) mapScroll -= delta * speed;
+	if(!loser && !pause) mapScroll -= delta * speed;
 
 	glPushMatrix();
 	glTranslatef(mapScroll, 0, 0);
@@ -62,12 +75,18 @@ void Map::draw()
 		entities[i]->draw();
 	}
 
-	if(collision(entities[0], entities[1]))
+	if(pause)
 	{
-		gameOver = true;
-		PLOG_DEBUG << "COLLISION DETECTED";
+		glPushMatrix();
+		PaintTexture({1, 1, 1}, GL_TRIANGLE_STRIP, 0, 4, bacground_box, standart_texture, 5);
+		glPopMatrix();
 	}
 
+	if(collision(entities[0], entities[1]))
+	{
+		loser = true;
+		PLOG_DEBUG << "COLLISION DETECTED";
+	}
 }
 
 Map::~Map()

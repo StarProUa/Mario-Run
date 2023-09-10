@@ -9,9 +9,16 @@ enum Key
 	Escape = 256,
 };
 
-enum KeyState
+enum State
 {
 	Press = 1,
+};
+
+enum mouseButton
+{
+	Left = 0,
+	Right,
+	Middle,
 };
 
 class Application
@@ -25,7 +32,9 @@ class Application
 protected:
 	Application(int width, int height, const char *title);
 
-	virtual void keyboard(int &key, int &scode, int &action, int &smode) = 0;
+	virtual void keyboard(int &key, int &action) = 0;
+	virtual void mouse(int &button, int &action, int x, int y) = 0;
+
 	virtual void render() = 0;
 
 	void exit();
@@ -38,7 +47,9 @@ public:
 private:
 	void initTexture();
 	void initLog();
+
 	static void keyboardCallback(GLFWwindow *window, int key, int scode, int action, int smode);
+	static void mouseCallback(GLFWwindow *window, int button, int action, int smode);
 };
 
 #endif // APP_H

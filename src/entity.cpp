@@ -33,7 +33,7 @@ float texture_coords[48] =
 		80.f / 288.f, 1.f,
 		96.f / 288.f, 0.f,
 		96.f / 288.f, 1.f,
-		// GameOver
+		// loser
 		96.f / 288.f, 0.f,
 		96.f / 288.f, 1.f,
 		112.f / 288.f, 0.f,
@@ -82,7 +82,7 @@ void Entity::spawn()
 
 void Player::jumpLogic()
 {
-	if(dy != 0)
+	if(dy != 0 && !pause)
 	{
 		y += dy * delta + 0.25;
 
@@ -98,30 +98,32 @@ void Player::jumpLogic()
 
 void Player::spriteLogic()
 {
-	if(!gameOver)
+	if(!pause)
 	{
-		if(clockUnit && onGround())
+		if(!loser)
 		{
-			sprite += 4;
-			if(sprite > 8) sprite = run0;
+			if(clockUnit && onGround())
+			{
+				sprite += 4;
+				if(sprite > 8) sprite = run0;
+			}
+			else if(!onGround())
+			{
+				sprite = spriteIndex::jump;
+			}
 		}
-		else if(!onGround())
+		else
 		{
-			sprite = spriteIndex::jump;
+			sprite = fall;
 		}
 	}
-	else
-	{
-		sprite = fall;
-	}
-
 }
 
 bool Player::onGround() { return y == ground || y <= ground + 10; }
 
 void Player::jump()
 {
-	if(onGround()) dy += jumpHeight;
+	if(onGround()) dy += jumpHeight; // тут апасна вийде таке шо зможу пригати в меню
 }
 
 Player::Player(const int &x, const int &y)
@@ -164,9 +166,9 @@ void Prop::spawn()
 
 void Prop::draw()
 {
-	if(!gameOver)
+	if(!pause)
 	{
-		x -= delta * speed;
+		if(!loser) x -= delta * speed;
 
 		spriteLogic();
 
@@ -208,12 +210,11 @@ void Cloud::spawn()
 
 void Cloud::draw()
 {
-	if(!gameOver)
-	{
-		x -= delta * speed;
 
-		if(x < -300) spawn();
-	}
+	x -= delta * speed;
+
+	if(x < -300) spawn();
+
 
 	glPushMatrix();
 	glTranslatef(x, y, 0);

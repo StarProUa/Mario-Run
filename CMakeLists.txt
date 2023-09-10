@@ -12,7 +12,6 @@ find_package(OpenGL REQUIRED)
 
 include_directories(${OPENGL_INCLUDE_DIRS})
 include_directories(external/stb)
-#include_directories(external/plog)
 
 set(SRC
     src/main.cpp
@@ -33,6 +32,8 @@ target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} glfw plog)
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${CMAKE_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/Mario-Run/assets
 )
+
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/Mario-Run/log)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/Mario-Run/bin")
 

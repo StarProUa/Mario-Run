@@ -22,7 +22,7 @@ struct Color
 	unsigned int r, g, b;
 };
 
-inline bool gameOver;
+inline bool loser, pause = true;
 inline bool clockUnit;
 inline double delta = 0;
 

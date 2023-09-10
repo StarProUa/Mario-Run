@@ -3,11 +3,12 @@
 
 class Map
 {
-	float mapScroll;
 public:
 	Map();
 	bool playerActive();
 	void playerJump(); // interface function to call the jump method in the player.
+	void click(const int &x, const int &y);
+	bool &Pause();
 	void draw();
 	~Map();
 };
