@@ -27,7 +27,7 @@ private:
 	{
 		if(key == Key::Space && action == State::Press)
 		{
-			if(map->playerActive() && !map->Pause())
+			if(map->playerActive())
 			{
 				map->playerJump();
 			}			

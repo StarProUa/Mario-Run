@@ -123,7 +123,7 @@ bool Player::onGround() { return y == ground || y <= ground + 10; }
 
 void Player::jump()
 {
-	if(onGround()) dy += jumpHeight; // тут апасна вийде таке шо зможу пригати в меню
+	if(onGround()) dy += jumpHeight;
 }
 
 Player::Player(const int &x, const int &y)
@@ -210,11 +210,9 @@ void Cloud::spawn()
 
 void Cloud::draw()
 {
-
 	x -= delta * speed;
 
 	if(x < -300) spawn();
-
 
 	glPushMatrix();
 	glTranslatef(x, y, 0);

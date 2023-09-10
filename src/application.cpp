@@ -92,23 +92,16 @@ void Application::Run()
 
 		glfwPollEvents();
 
-		//std::cout << now - lastFrameTime << "  -  " << fpsLimit << std::endl;
+		if((sleepTime -= delta) <= 0)
+		{
+			clockUnit = true;
+			sleepTime = WAIT;
+		}
 
-		//if((now - lastFrameTime) >= fpsLimit)
-		//{
-			if((sleepTime -= delta) <= 0)
-			{
-				clockUnit = true;
-				sleepTime = WAIT;
-			}
+		render();
+		glfwSwapBuffers(window);
 
-			render();
-			glfwSwapBuffers(window);
-
-			//lastFrameTime = now;
-
-			clockUnit = false;
-		//}
+		clockUnit = false;
 
 		lastUpdateTime = now;
 

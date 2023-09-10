@@ -44,14 +44,11 @@ bool &Map::Pause()
 
 void Map::playerJump()
 {
-	Player *player = static_cast<Player *>(entities[0]);
-	player->jump();
-}
-
-void Map::click(const int &x, const int &y)
-{
-
-
+	if(!pause)
+	{
+		Player *player = static_cast<Player *>(entities[0]);
+		player->jump();
+	}
 }
 
 void Map::draw()
